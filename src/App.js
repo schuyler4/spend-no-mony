@@ -1,19 +1,32 @@
 import React, { Component } from 'react';
+import { connect }  from 'react-redux'
+import * as actions from './actions'
 
 class App extends Component {
+  renderLogOutBtn() {
+    console.log(this.props.auth)
+    if (this.props.auth.email && this.props.auth.uid) {
+      return <button>logout button</button>
+    }
+  }
+
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+      <div>
+        <h1>Spend No Mony</h1>
+        {this.renderLogOutBtn()}
+        <div>
+          {this.props.children}
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
       </div>
     );
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    auth: state.authReducer
+  }
+}
+
+export default connect(mapStateToProps, actions)(App);

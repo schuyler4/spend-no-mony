@@ -13,9 +13,9 @@ const store = createStore(app)
 render((
     <Provider store={store}>
       <Router history={browserHistory}>
-        <Route path="/" component={App}>
-          <Route path="auth" component={AuthView}></Route>
-          <Route path="profile" component={Profile}></Route>
+        <Route path='/' component={App}>
+          <Route path='auth' component={AuthView}></Route>
+          <Route path='profile' component={Profile}></Route>
         </Route>
       </Router>
     </Provider>

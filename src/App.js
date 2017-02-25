@@ -1,8 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { connect }  from 'react-redux'
 import * as actions from './actions'
+import { browserHistory } from 'react-router'
 
 class App extends Component {
+  componentWillMount() {
+    if(this.props.location.pathname != '/auth' && !this.props.auth.email) {
+      browserHistory.push('/auth')
+    }
+  }
+
   renderLogOutBtn() {
     console.log(this.props.auth)
     if (this.props.auth.email && this.props.auth.uid) {

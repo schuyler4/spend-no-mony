@@ -5,3 +5,7 @@ export function loginUser(email, uid) {
     uid
   }
 }
+
+export function logoutUser() {
+  return { type: 'LOGOUT_USER' }
+}

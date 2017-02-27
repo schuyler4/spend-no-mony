@@ -1,14 +1,15 @@
-import React from 'react'
+import React, { Component } from 'react';
+import { Link, browserHistory } from 'react-router';
+import firebase from 'firebase';
 
-function Profile(props) {
-  return (
-    <div>
-      <button>Get Something</button>
-      <button>Give Something</button>
-      <h1>Items getting</h1>
-      <h1>Items giving</h1>
-    </div>
-  )
+class Profile extends Component  {
+  render() {
+    return (
+      <div>
+        <Link to={'new'}>Give Something</Link>
+      </div>
+    );
+  }
 }
 
-export default Profile
+export default Profile;

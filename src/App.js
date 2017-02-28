@@ -10,7 +10,7 @@ class App extends Component {
     const user = firebase.auth().currentUser;
     const path = this.props.location.pathname;
 
-    if(!user && path != '/auth') {
+    if(!user && path !== '/auth') {
       browserHistory.push('/auth');
     }
 
@@ -20,9 +20,9 @@ class App extends Component {
   render() {
     return (
       <div>
-        <AppBar 
-          title='Spend No Mony' 
-          iconClassNameRight="muidocs-icon-navigation-expand-more" 
+        <AppBar
+          title='Spend No Mony'
+          iconClassNameRight="muidocs-icon-navigation-expand-more"
         />
         {this.props.children}
       </div>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
 import TextField from 'material-ui/TextField';
+import browserHistory from '';
 
 import database from '../database';
 
@@ -19,17 +20,14 @@ class NewItemView extends Component {
 
   componentWillMount() {
     if(navigator.geolocation) {
-      console.log('getting location');
       navigator.geolocation.getCurrentPosition((position) => {
         this.setState({ location: {
-          lat: position.coords.latitude, 
-          long: position.coords.longitude 
+          lat: position.coords.latitude,
+          long: position.coords.longitude
         }});
-        console.log('got location')
       });
     } else {
-      console.log('not working')
-      this.setState({warningText: 'location is not supperted by your browser', 
+      this.setState({warningText: 'location is not supperted by your browser',
         location: {lat: 'the moon', long: 'the moon'}});
     }
   }
@@ -66,7 +64,7 @@ class NewItemView extends Component {
       const user = firebase.auth().currentUser;
       const image = this.state.image.split(',')[1];
       const imageId = (new Date()).toString() + user.uid;
-    
+
       if(this.state.image != '') {
         const storageRef = firebase.storage().ref();
         const imageRef = storageRef.child(`images/${imageId}`);
@@ -75,7 +73,7 @@ class NewItemView extends Component {
           console.log('image uploaded')
         });
       }
-        
+
       const data = {
         title: this.state.title,
         description: this.state.description,
@@ -103,17 +101,23 @@ class NewItemView extends Component {
         <p> {this.state.warningText} </p>
         {this.renderImage()}
         <p>photo:</p>
-        <input type="file" value={this.state.file} onChange={this.imageOnChange.bind(this) }/>
-        <TextField 
-          hintText="title" value={this.state.title} onChange={this.titleOnChange.bind(this)} 
+        <input
+          type="file"
+          value={this.state.file}
+          onChange={this.imageOnChange.bind(this) }
+        />
+        <TextField
+          hintText="title" value={this.state.title}
+          onChange={this.titleOnChange.bind(this)}
           name='title'
         />
-        <p>description:</p> 
-        <TextField 
-          value={this.state.description} onChange={this.descriptionOnChange.bind(this)} 
+        <p>description:</p>
+        <TextField
+          value={this.state.description}
+          onChange={this.descriptionOnChange.bind(this)}
           name='description'
         />
-        <button onClick={this.submitClicked.bind(this)}> Submit </button>
+        <button onClick={this.submitClicked.bind(this)}>Submit</button>
       </div>
     );
   }

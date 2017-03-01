@@ -2,20 +2,25 @@ import React, { Component } from 'react';
 import firebase from 'firebase';
 import haversine from 'haversine-js';
 import {List, ListItem} from 'material-ui/List';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import RaisedButton from 'material-ui/RaisedButton';
 
-import {List, ListItem} from 'material-ui/List';
+import Item from './Item';
 
 class ListItemView extends Component {
   constructor() {
     super();
     this.state = {
       items: [],
-      lat: 0,
-      long: 0,
-      value: 1
+      lat: null,
+      long: null,
+      value: 1,
+      detail: false,
+      selectedItem: null
     };
 
     this.selectOnChange = this.selectOnChange.bind(this);
+    this.findItems = this.findItems.bind(this);
   }
 
   getLocation() {
@@ -24,7 +29,7 @@ class ListItemView extends Component {
         this.setState({lat: position.coords.latitude,
           long: position.coords.longitude});
         this.findItems();
-      })
+      });
     }
   }
 
@@ -51,7 +56,7 @@ class ListItemView extends Component {
         };
 
         const difference = haversine(currentLocation, itemLocation, options)
-        .toFixed(0);
+          .toFixed(0);
 
         if(difference <= this.state.value) {
           items.push(item);
@@ -70,17 +75,62 @@ class ListItemView extends Component {
     this.getLocation();
   }
 
+  itemClicked(itemIndex) {
+    const item = this.state.items[itemIndex];
+    console.log('panda');
+    console.log(itemIndex);
+    console.log(item)
+    console.log('panda');
+    this.setState({selectedItem: item, detail: true});
+  }
+
+  backClicked(event) {
+    this.setState({detail: false});
+  }
+
+  renderListItems() {
+    let listItems = [];
+
+    if(this.state.items.length > 0) {
+      for (let item of this.state.items) {
+        listItems.push(<ListItem
+          primaryText={item.title}
+          onClick={() => this.itemClicked(this.state.items.indexOf(item))}
+          key={this.state.items.indexOf(item)}
+        />);
+      }
+    } else {
+      return <h1>Loading...</h1>;
+    }
+
+    return listItems;
+  }
+
   render() {
-    return (
-      <div>
-        <select value={this.state.value} onChange={this.selectOnChange}>
-          <option value="1">1</option>
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-        </select>
-      </div>
-    );
+    if(!this.state.detail) {
+      return (
+        <MuiThemeProvider>
+          <div>
+            <select value={this.state.value} onChange={this.selectOnChange}>
+              <option value="1">1</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+            </select>
+            <List>
+              {this.renderListItems()}
+            </List>
+          </div>
+        </MuiThemeProvider>
+      );
+    } else {
+      return (
+        <div>
+          <RaisedButton label="Back" onClick={this.backClicked.bind(this)}/>
+          <Item item={this.state.selectedItem} />
+        </div>
+      );
+    }
   }
 }
 

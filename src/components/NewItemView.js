@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import TextField from 'material-ui/TextField';
 import { browserHistory } from 'react-router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Loader from 'react-loader';
 
 class NewItemView extends Component {
   constructor() {
@@ -15,7 +16,8 @@ class NewItemView extends Component {
       image: '',
       fileUrl: '',
       warningText: 'your location will be based of your current location',
-      location: {}
+      location: {},
+      loading: false
     };
   }
 
@@ -25,18 +27,13 @@ class NewItemView extends Component {
         this.setState({ location: {
           lat: position.coords.latitude,
           long: position.coords.longitude
-        }});
+        }, loading: true});
+        console.log('loaded')
       });
-    } else {
-      this.setState({warningText: 'location is not supperted by your browser',
-        location: {lat: 'the moon', long: 'the moon'}});
+      return;
     }
-  }
-
-  buttonOnClick() {
-    if(this.state.title !== '' && this.state.description !== '') {
-      console.log('hello');
-    }
+    this.setState({warningText: 'location is not supperted by your browser',
+      location: {lat: 'the moon', long: 'the moon'}});
   }
 
   titleOnChange(event) {
@@ -61,33 +58,33 @@ class NewItemView extends Component {
   submitClicked() {
     if(this.state.title === '' && this.state.description === '') {
       this.setState({warningText: 'all fields must be filled out'});
-    } else {
-      const user = firebase.auth().currentUser;
-      const image = this.state.image.split(',')[1];
-      const imageId = (new Date()).toString() + user.uid;
-
-      if(this.state.image !== '') {
-        const storageRef = firebase.storage().ref();
-        const imageRef = storageRef.child(`images/${imageId}`);
-
-        imageRef.putString(image, 'base64');
-      }
-
-      const data = {
-        title: this.state.title,
-        description: this.state.description,
-        data: new Date(),
-        location: this.state.location,
-        imageId: imageId
-      };
-
-     const database = firebase.database();
-     const itemsRef = database.ref('items').push();
-     console.log(database.ref('items'));
-
-     itemsRef.set(data);
-     browserHistory.push('/profile')
+      return;
     }
+    const user = firebase.auth().currentUser;
+    const image = this.state.image.split(',')[1];
+    const imageId = (new Date()).toString() + user.uid;
+
+    if(this.state.image !== '') {
+      const storageRef = firebase.storage().ref();
+      const imageRef = storageRef.child(`images/${imageId}`);
+
+      imageRef.putString(image, 'base64');
+    }
+
+   const database = firebase.database();
+   const itemsRef = database.ref('items').push();
+
+   itemsRef.set({
+     title: this.state.title,
+     description: this.state.description,
+     data: new Date(),
+     location: this.state.location,
+     imageId: imageId,
+     userId: firebase.auth().currentUser.uid,
+     interests: [''],
+   });
+
+   browserHistory.push('/profile');
   }
 
   renderImage() {
@@ -98,30 +95,32 @@ class NewItemView extends Component {
 
   render() {
     return (
-      <MuiThemeProvider>
-        <div>
-          <p> {this.state.warningText} </p>
-          {this.renderImage()}
-          <p>photo:</p>
-          <input
-            type="file"
-            value={this.state.file}
-            onChange={this.imageOnChange.bind(this) }
-          />
-          <TextField
-            hintText="title" value={this.state.title}
-            onChange={this.titleOnChange.bind(this)}
-            name="title"
-          />
-          <p>description:</p>
-          <TextField
-            value={this.state.description}
-            onChange={this.descriptionOnChange.bind(this)}
-            name="description"
-          />
-          <button onClick={this.submitClicked.bind(this)}>Submit</button>
-        </div>
-      </MuiThemeProvider>
+      <Loader loaded={this.state.loaded}>
+        <MuiThemeProvider>
+            <div>
+              <p> {this.state.warningText} </p>
+              {this.renderImage()}
+              <p>photo:</p>
+              <input
+                type="file"
+                value={this.state.file}
+                onChange={this.imageOnChange.bind(this) }
+              />
+              <TextField
+                hintText="title" value={this.state.title}
+                onChange={this.titleOnChange.bind(this)}
+                name="title"
+              />
+              <p>description:</p>
+              <TextField
+                value={this.state.description}
+                onChange={this.descriptionOnChange.bind(this)}
+                name="description"
+              />
+              <button onClick={this.submitClicked.bind(this)}>Submit</button>
+            </div>
+        </MuiThemeProvider>
+      </Loader>
     );
   }
 }

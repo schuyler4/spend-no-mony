@@ -4,6 +4,7 @@ import haversine from 'haversine-js';
 import {List, ListItem} from 'material-ui/List';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
+import Loader from 'react-loader';
 
 import Item from './Item';
 
@@ -16,7 +17,8 @@ class ListItemView extends Component {
       long: null,
       value: 1,
       detail: false,
-      selectedItem: null
+      selectedItem: null,
+      loaded: false
     };
 
     this.selectOnChange = this.selectOnChange.bind(this);
@@ -49,7 +51,7 @@ class ListItemView extends Component {
 
     itemsRef.on('value', (item) => {
       item.forEach(child => {
-        const item = child.val()
+        const item = child.val();
         const itemLocation = {
           latitude: item.location.lat,
           longitude: item.location.long
@@ -77,10 +79,6 @@ class ListItemView extends Component {
 
   itemClicked(itemIndex) {
     const item = this.state.items[itemIndex];
-    console.log('panda');
-    console.log(itemIndex);
-    console.log(item)
-    console.log('panda');
     this.setState({selectedItem: item, detail: true});
   }
 
@@ -89,21 +87,13 @@ class ListItemView extends Component {
   }
 
   renderListItems() {
-    let listItems = [];
-
-    if(this.state.items.length > 0) {
-      for (let item of this.state.items) {
-        listItems.push(<ListItem
-          primaryText={item.title}
-          onClick={() => this.itemClicked(this.state.items.indexOf(item))}
-          key={this.state.items.indexOf(item)}
-        />);
-      }
-    } else {
-      return <h1>Loading...</h1>;
-    }
-
-    return listItems;
+    return this.state.items.map((item) => {
+      return <ListItem
+        primaryText={item.title}
+        onClick={() => this.itemClicked(this.state.items.indexOf(item))}
+        key={this.state.items.indexOf(item)}
+      />
+    });
   }
 
   render() {
@@ -123,14 +113,13 @@ class ListItemView extends Component {
           </div>
         </MuiThemeProvider>
       );
-    } else {
-      return (
-        <div>
-          <RaisedButton label="Back" onClick={this.backClicked.bind(this)}/>
-          <Item item={this.state.selectedItem} />
-        </div>
-      );
     }
+    return (
+      <div>
+        <RaisedButton label="Back" onClick={this.backClicked.bind(this)}/>
+        <Item item={this.state.selectedItem} />
+      </div>
+    );
   }
 }
 

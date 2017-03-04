@@ -65,7 +65,7 @@ class ListItemView extends Component {
         }
       });
 
-      this.setState({items});
+      this.setState({items, loaded: true});
     })
   }
 
@@ -99,19 +99,21 @@ class ListItemView extends Component {
   render() {
     if(!this.state.detail) {
       return (
-        <MuiThemeProvider>
-          <div>
-            <select value={this.state.value} onChange={this.selectOnChange}>
-              <option value="1">1</option>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-            <List>
-              {this.renderListItems()}
-            </List>
-          </div>
-        </MuiThemeProvider>
+        <Loader loaded={this.state.loaded}>
+          <MuiThemeProvider>
+            <div>
+              <select value={this.state.value} onChange={this.selectOnChange}>
+                <option value="1">1</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+              </select>
+              <List>
+                {this.renderListItems()}
+              </List>
+            </div>
+          </MuiThemeProvider>
+        </Loader>
       );
     }
     return (

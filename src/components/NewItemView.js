@@ -17,7 +17,7 @@ class NewItemView extends Component {
       fileUrl: '',
       warningText: 'your location will be based of your current location',
       location: {},
-      loading: false
+      loaded: false
     };
   }
 
@@ -27,8 +27,7 @@ class NewItemView extends Component {
         this.setState({ location: {
           lat: position.coords.latitude,
           long: position.coords.longitude
-        }, loading: true});
-        console.log('loaded')
+        }, loaded: true});
       });
       return;
     }
